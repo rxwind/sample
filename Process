@@ -1,0 +1,338 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Transactions;
+using System.Windows.Forms;
+using MetroFramework.Controls;
+
+namespace System_Ticketing
+{
+    public partial class fSchedule : Form
+    {
+        public fSchedule()
+        {
+            InitializeComponent();
+            v.col = Controls;
+            v.pacinput = pInput.Controls;      
+        }
+
+        void load()
+        {
+            dgv.DataSource = x.dc.Shows.ToList();
+            dgvdesign();
+        }
+        void dgvdesign()
+        {
+            dgv.Columns["Id_MRT"].Visible = false;
+        }
+        private void fSchedule_Load(object sender, EventArgs e)
+        {
+            load();
+            v.enablefalse();
+            v.clearbox();
+        }
+
+        private void TBSeat_ValueChanged(object sender, EventArgs e)
+        {
+            if(TBSeat.Value == 0) { boxSeat.Text = ""; }
+            else { boxSeat.Text = TBSeat.Value.ToString(); }            
+        }
+
+        private void boxSeat_TextChanged(object sender, EventArgs e)
+        {            
+            if (string.IsNullOrWhiteSpace(boxSeat.Text) == false)
+            {
+                if (int.Parse(boxSeat.Text) > x.mrtseat) { boxSeat.Text = x.mrtseat.ToString(); }
+                else { TBSeat.Value = int.Parse(boxSeat.Text); }
+            }
+            else { TBSeat.Value = 0; }           
+        }
+
+
+
+        private void bInsert_Click(object sender, EventArgs e)
+        {
+            v.clearbox();
+            x.updatemode = false;
+            bUpdate.BackColor = x.cUpdatebackcolor;
+            if (x.insertmode == true)
+            {
+                x.insertmode = false;
+                enablefalse();
+                bInsert.BackColor = x.cInsertbackcolor;         
+            }
+            else
+            {
+                x.insertmode = true;
+                enabletrue();
+                rnd();
+                bInsert.BackColor = x.cInsertclick;
+            }
+        }
+        void enabletrue()
+        {
+            bSubmit.Enabled = true;
+            bSMRT.Enabled = true;
+            bSfrom.Enabled = true;
+            bSto.Enabled = true;           
+            boxTime1.Enabled = true;
+            boxTime2.Enabled = true;
+            boxDate.Enabled = true;       
+            bRandom.Enabled = true;
+            
+        }
+        void enablefalse()
+        {
+            bSubmit.Enabled = false;
+            boxMRT.Enabled = false;
+            bSMRT.Enabled = false;
+            bSfrom.Enabled = false;
+            bSto.Enabled = false;
+            boxTime1.Enabled = false;
+            boxTime2.Enabled = false;
+            boxDate.Enabled = false;
+            boxSeat.Enabled = false;
+            TBSeat.Enabled = false;
+            bRandom.Enabled = false;
+            
+        }
+        private void bDelete_Click(object sender, EventArgs e)
+        {
+            delete();
+        }
+        void delete()
+        {
+            if (dgv.RowCount > 0)
+            {
+                string deleteid = dgv.CurrentRow.Cells[0].Value.ToString();
+                x.sh = x.dc.Shows.FirstOrDefault(i => i.Id_Schedule.ToString() == deleteid);
+                if (x.sh != null)
+                {
+                    x.dc.Shows.DeleteOnSubmit(x.sh);
+                    x.dc.SubmitChanges();
+                }
+                else { x.nChooserow(); }
+                load();
+            }
+            else { x.nRowcountzero(); }
+        }
+
+        private void bUpdate_Click(object sender, EventArgs e)
+        {
+            if (dgv.RowCount > 0)
+            {
+                v.clearbox();
+                x.insertmode = false;
+                bInsert.BackColor = x.cInsertbackcolor;
+                if (x.updatemode == true)
+                {
+                    x.updatemode = false;
+                    enablefalse();
+                    bUpdate.BackColor = x.cUpdatebackcolor;
+                }
+                else
+                {
+                    x.updatemode = true;
+                    dgv_SelectionChanged(null, null);
+                    enabletrue();
+                    bRandom.Enabled = false;
+                    bUpdate.BackColor = x.cUpdateclick;
+                }
+            }
+            else { x.nRowcountzero(); }
+        }
+
+        private void bNote_Click(object sender, EventArgs e)
+        {
+            note();
+        }
+        void note()
+        {
+            if (dgv.RowCount > 0)
+            {
+                x.id = dgv.CurrentRow.Cells[0].Value.ToString();
+                x.notetxt = dgv.CurrentRow.Cells["Note"].Value.ToString();
+                if (x.note.ShowDialog() == DialogResult.OK)
+                {
+                    x.sh = x.dc.Shows.FirstOrDefault(i => i.Id_Schedule.ToString() == x.id);
+                    x.sh.Note = x.notetxt;
+                    x.dc.SubmitChanges();
+                    load();
+                }
+            }
+            else { x.nRowcountzero(); }
+        }
+
+        private void bRefresh_Click(object sender, EventArgs e)
+        {
+            load();
+        }
+
+        private void bClear_Click(object sender, EventArgs e)
+        {
+            v.clearbox();
+            TBSeat.Value = 0;
+            TBSeat.Maximum = 1;
+        }
+
+        private void bSubmit_Click(object sender, EventArgs e)
+        {
+            prosessubmit();
+        }
+        
+        void prosessubmit()
+        {
+            if (v.validasi() == true)
+            {
+                x.sh = x.dc.Shows.FirstOrDefault(i => i.Id_Schedule.ToString() == boxIdschedule.Text);
+                if (x.sh != null) { if (x.updatemode == true) { input("update"); } if (x.insertmode == true) { x.nAlreadyuse(); } }
+                else {
+                    if (x.insertmode == true)
+                    {
+                        input("insert");
+                    }
+                }
+                load();
+            }
+        }
+        void input(string inputs)
+        {
+            try
+            {
+                using (TransactionScope ts = new TransactionScope())
+                {
+                    x.sh = inputs == "insert" ? new Show() : x.dc.Shows.FirstOrDefault(i => i.Id_Schedule.ToString() == boxIdschedule.Text);
+                    x.sh.Id_MRT = x.idmrt;
+                    x.sh.MRT = boxMRT.Text;
+                    x.sh.Date = DateTime.Parse(boxDate.Value.ToShortDateString());
+                    x.sh.Departure_Station = boxFrom.Text;
+                    x.sh.Destination_Station = boxTo.Text;
+                    x.sh.Departure_Time = TimeSpan.Parse(boxTime1.Text);
+                    x.sh.Arrival_Time = TimeSpan.Parse(boxTime2.Text);
+                    x.sh.Seat = int.Parse(boxSeat.Text);
+                    if (inputs == "insert")
+                    {
+                        x.sh.Id_Schedule = boxIdschedule.Text;
+                        x.sh.Note = "";
+                        x.dc.Shows.InsertOnSubmit(x.sh);
+                        x.dc.SubmitChanges();
+                        v.clearbox();
+                        rnd();
+                    }
+                    else if (inputs == "update")
+                    {
+                        x.dc.SubmitChanges();
+                        x.nUpdate();
+                    }
+                    ts.Complete();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+           
+        }
+
+        private void bRandom_Click(object sender, EventArgs e)
+        {
+           rnd();
+        }
+        void rnd()
+        {
+            Random r = new Random();
+            string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            string r1 = chars[r.Next(chars.Length)].ToString();
+            string r2 = chars[r.Next(chars.Length)].ToString();
+            string r3 = chars[r.Next(chars.Length)].ToString();
+            string r4 = chars[r.Next(chars.Length)].ToString();
+            string r5 = chars[r.Next(chars.Length)].ToString();
+            string r6 = chars[r.Next(chars.Length)].ToString();
+            string r7 = chars[r.Next(chars.Length)].ToString();
+            string r8 = chars[r.Next(chars.Length)].ToString();
+            string r9 = chars[r.Next(chars.Length)].ToString();
+            string r10 = chars[r.Next(chars.Length)].ToString();
+            boxIdschedule.Text = "XC" + r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8 + r9 + r10;
+        }
+
+        private void dgv_SelectionChanged(object sender, EventArgs e)
+        {
+            if ((dgv.CurrentRow != null) && (x.updatemode == true))
+            {
+                boxSeat.Enabled = true;
+                TBSeat.Enabled = true;
+                boxIdschedule.Text = dgv.CurrentRow.Cells["Id_Schedule"].Value.ToString();
+                boxMRT.Text = dgv.CurrentRow.Cells["MRT"].Value.ToString();
+                boxDate.Text = dgv.CurrentRow.Cells["Date"].Value.ToString();
+                boxFrom.Text = dgv.CurrentRow.Cells["Departure_Station"].Value.ToString();
+                boxTo.Text = dgv.CurrentRow.Cells["Destination_Station"].Value.ToString();
+                boxTime1.Text = dgv.CurrentRow.Cells["Departure_Time"].Value.ToString();
+                boxTime2.Text = dgv.CurrentRow.Cells["Arrival_Time"].Value.ToString();
+                x.idmrt = dgv.CurrentRow.Cells["Id_MRT"].Value.ToString();
+                x.mrtseat = x.dc.Seats.Where(a => a.Id_MRT == x.idmrt).Count();
+                TBSeat.Maximum = x.mrtseat;
+                boxSeat.Text = dgv.CurrentRow.Cells["Seat"].Value.ToString();
+
+            }
+        }
+
+        private void bSearch_Click(object sender, EventArgs e)
+        {
+            search();
+        }
+        void search()
+        {
+            dgv.DataSource = x.dc.Shows.Select(a => new { a.Id_Schedule, a.Id_MRT, a.MRT, a.Departure_Station, a.Departure_Time, a.Destination_Station, a.Arrival_Time, a.Seat, a.Date, a.Note }).
+            Where(b => b.Id_Schedule.Contains(boxSearch.Text) || b.MRT.Contains(boxSearch.Text) || b.Departure_Station.Contains(boxSearch.Text) || b.Destination_Station.Contains(boxSearch.Text)).ToList();
+            dgvdesign();
+        }
+
+        private void boxSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter) { search(); }
+        }
+
+        private void bSMRT_Click(object sender, EventArgs e)
+        {
+            x.component = "MRT";
+            if (x.scmrt.ShowDialog() == DialogResult.OK)
+            {
+                boxMRT.Text = x.mrtname;              
+                TBSeat.Maximum = x.mrtseat;
+                TBSeat.Value = x.mrtseat;
+                boxSeat.Text = x.mrtseat.ToString();
+                boxSeat.Enabled = true;
+                TBSeat.Enabled = true;          
+            }
+        }
+
+
+        private void bSfrom_Click(object sender, EventArgs e)
+        {
+            x.component = "STATION";
+            if (x.scmrt.ShowDialog() == DialogResult.OK)
+            {
+                boxFrom.Text = x.stationname;
+            }
+        }
+
+        private void bSto_Click(object sender, EventArgs e)
+        {
+            x.component = "STATION";
+            if (x.scmrt.ShowDialog() == DialogResult.OK)
+            {
+                boxTo.Text = x.stationname;
+            }
+        }
+
+        private void boxSearch_ButtonClick(object sender, EventArgs e)
+        {
+            search();
+        }
+    }
+}
