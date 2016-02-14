@@ -1,0 +1,10 @@
+        private void bSave_Click(object sender, EventArgs e)
+        {
+            x.notetxt = boxNote.Text;
+            this.DialogResult = DialogResult.OK;
+        }
+
+        private void fNote_Load(object sender, EventArgs e)
+        {
+            boxNote.Text = x.notetxt;
+        }
