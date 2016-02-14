@@ -1,0 +1,468 @@
+USE [master]
+GO
+/****** Object:  Database [TicketSystem]    Script Date: 15/02/2016 01.44.48 ******/
+CREATE DATABASE [TicketSystem]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'TicketSystem', FILENAME = N'C:\Program Files (x86)\Microsoft SQL Server\MSSQL12.MSSQLSERVER\MSSQL\DATA\TicketSystem.mdf' , SIZE = 5120KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
+ LOG ON 
+( NAME = N'TicketSystem_log', FILENAME = N'C:\Program Files (x86)\Microsoft SQL Server\MSSQL12.MSSQLSERVER\MSSQL\DATA\TicketSystem_log.ldf' , SIZE = 2048KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+GO
+ALTER DATABASE [TicketSystem] SET COMPATIBILITY_LEVEL = 120
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [TicketSystem].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [TicketSystem] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [TicketSystem] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [TicketSystem] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [TicketSystem] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [TicketSystem] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [TicketSystem] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [TicketSystem] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [TicketSystem] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [TicketSystem] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [TicketSystem] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [TicketSystem] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [TicketSystem] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [TicketSystem] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [TicketSystem] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [TicketSystem] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [TicketSystem] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [TicketSystem] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [TicketSystem] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [TicketSystem] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [TicketSystem] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [TicketSystem] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [TicketSystem] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [TicketSystem] SET RECOVERY FULL 
+GO
+ALTER DATABASE [TicketSystem] SET  MULTI_USER 
+GO
+ALTER DATABASE [TicketSystem] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [TicketSystem] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [TicketSystem] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [TicketSystem] SET TARGET_RECOVERY_TIME = 0 SECONDS 
+GO
+ALTER DATABASE [TicketSystem] SET DELAYED_DURABILITY = DISABLED 
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'TicketSystem', N'ON'
+GO
+USE [TicketSystem]
+GO
+/****** Object:  Table [dbo].[Booking]    Script Date: 15/02/2016 01.44.49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Booking](
+	[Booking_Reference] [varchar](20) NOT NULL,
+	[Id_Passenger] [varchar](14) NULL,
+	[Id_Schedule] [varchar](12) NULL,
+	[Id_Ticket] [varchar](8) NULL,
+	[Note] [text] NULL,
+ CONSTRAINT [PK_Booking] PRIMARY KEY CLUSTERED 
+(
+	[Booking_Reference] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Carriage]    Script Date: 15/02/2016 01.44.49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Carriage](
+	[Id_Carriage] [varchar](8) NOT NULL,
+	[Carriage_Name] [varchar](20) NOT NULL,
+	[Id_MRT] [varchar](10) NOT NULL,
+	[Seat] [int] NULL,
+	[Date_Created] [date] NULL,
+	[Id_Status] [varchar](3) NOT NULL,
+	[Note] [text] NULL,
+ CONSTRAINT [PK_Carriage] PRIMARY KEY CLUSTERED 
+(
+	[Id_Carriage] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Location]    Script Date: 15/02/2016 01.44.49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Location](
+	[Id_Location] [varchar](8) NOT NULL,
+	[Location_Name] [varchar](50) NOT NULL,
+	[Id_Status] [varchar](3) NOT NULL,
+	[Note] [text] NULL,
+ CONSTRAINT [PK_Location] PRIMARY KEY CLUSTERED 
+(
+	[Id_Location] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[MRT]    Script Date: 15/02/2016 01.44.49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[MRT](
+	[Id_MRT] [varchar](10) NOT NULL,
+	[MRT_Name] [varchar](50) NOT NULL,
+	[Carriage] [int] NULL,
+	[Seat] [int] NULL,
+	[Date_Created] [date] NULL,
+	[Id_Status] [varchar](3) NOT NULL,
+	[Note] [text] NULL,
+ CONSTRAINT [PK_Train] PRIMARY KEY CLUSTERED 
+(
+	[Id_MRT] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Passenger]    Script Date: 15/02/2016 01.44.49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Passenger](
+	[Id_Passenger] [varchar](14) NOT NULL,
+	[Name] [varchar](100) NOT NULL,
+	[Email] [varchar](50) NOT NULL,
+	[Town] [varchar](50) NOT NULL,
+	[Country] [varchar](50) NOT NULL,
+	[Postcode] [varchar](50) NOT NULL,
+	[Adress] [text] NOT NULL,
+	[Note] [text] NULL,
+ CONSTRAINT [PK_Passenger] PRIMARY KEY CLUSTERED 
+(
+	[Id_Passenger] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Payment]    Script Date: 15/02/2016 01.44.49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Payment](
+	[Invoice_Number] [varchar](20) NOT NULL,
+	[Payment_Name] [varchar](50) NOT NULL,
+	[Booking_Reference] [varchar](20) NULL,
+	[Note] [text] NULL,
+ CONSTRAINT [PK_Payment] PRIMARY KEY CLUSTERED 
+(
+	[Invoice_Number] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Seat]    Script Date: 15/02/2016 01.44.49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Seat](
+	[Id_Seat] [varchar](8) NOT NULL,
+	[Seat_Name] [varchar](20) NOT NULL,
+	[Id_MRT] [varchar](10) NOT NULL,
+	[Id_Carriage] [varchar](8) NOT NULL,
+	[Date_Created] [date] NULL,
+	[Id_Status] [varchar](3) NOT NULL,
+	[Note] [text] NULL,
+ CONSTRAINT [PK_Seat] PRIMARY KEY CLUSTERED 
+(
+	[Id_Seat] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Show]    Script Date: 15/02/2016 01.44.49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Show](
+	[Id_Schedule] [varchar](12) NOT NULL,
+	[Id_MRT] [varchar](10) NOT NULL,
+	[MRT] [varchar](50) NOT NULL,
+	[Departure_Station] [varchar](50) NULL,
+	[Destination_Station] [varchar](50) NULL,
+	[Departure_Time] [time](7) NOT NULL,
+	[Arrival_Time] [time](7) NULL,
+	[Seat] [int] NULL,
+	[Date] [date] NOT NULL,
+	[Note] [text] NULL,
+ CONSTRAINT [PK_Show] PRIMARY KEY CLUSTERED 
+(
+	[Id_Schedule] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Status]    Script Date: 15/02/2016 01.44.49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Status](
+	[Id_Status] [varchar](3) NOT NULL,
+	[Status_Name] [varchar](20) NULL,
+ CONSTRAINT [PK_Status] PRIMARY KEY CLUSTERED 
+(
+	[Id_Status] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Ticket]    Script Date: 15/02/2016 01.44.49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Ticket](
+	[Id_Ticket] [varchar](8) NOT NULL,
+	[Ticket_Name] [varchar](50) NOT NULL,
+	[Id_Ticket_Type] [varchar](8) NULL,
+	[Price] [decimal](18, 2) NOT NULL,
+	[Note] [text] NULL,
+ CONSTRAINT [PK_Ticket] PRIMARY KEY CLUSTERED 
+(
+	[Id_Ticket] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[TicketType]    Script Date: 15/02/2016 01.44.49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[TicketType](
+	[Id_Ticket_Type] [varchar](8) NOT NULL,
+	[Ticket_Type] [varchar](20) NOT NULL,
+	[Note] [text] NULL,
+ CONSTRAINT [PK_TicketType] PRIMARY KEY CLUSTERED 
+(
+	[Id_Ticket_Type] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[User]    Script Date: 15/02/2016 01.44.49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[User](
+	[Id_User] [varchar](8) NOT NULL,
+	[Username] [varchar](20) NOT NULL,
+	[Password] [varchar](50) NOT NULL,
+	[First_Name] [varchar](100) NULL,
+	[Last_Name] [varchar](100) NULL,
+	[Email] [varchar](50) NULL,
+	[Town] [varchar](50) NULL,
+	[Country] [varchar](50) NULL,
+	[Postcode] [varchar](20) NULL,
+	[Address] [text] NULL,
+	[Note] [text] NULL,
+ CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
+(
+	[Id_User] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Venue]    Script Date: 15/02/2016 01.44.49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Venue](
+	[Id_Station] [varchar](8) NOT NULL,
+	[Station_Name] [varchar](50) NOT NULL,
+	[Location] [varchar](50) NOT NULL,
+	[Date_Created] [date] NULL,
+	[Id_Status] [varchar](3) NOT NULL,
+	[Note] [text] NULL,
+ CONSTRAINT [PK_Venue] PRIMARY KEY CLUSTERED 
+(
+	[Id_Station] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+INSERT [dbo].[Carriage] ([Id_Carriage], [Carriage_Name], [Id_MRT], [Seat], [Date_Created], [Id_Status], [Note]) VALUES (N'XC831OI1', N'hhu', N'XMRTVBPX0W', 1, CAST(N'2016-02-12' AS Date), N'X02', N'')
+INSERT [dbo].[Carriage] ([Id_Carriage], [Carriage_Name], [Id_MRT], [Seat], [Date_Created], [Id_Status], [Note]) VALUES (N'XCE1XJ1Y', N'A', N'XMRTNDCW00', 2, CAST(N'2016-02-09' AS Date), N'X01', N'')
+INSERT [dbo].[Location] ([Id_Location], [Location_Name], [Id_Status], [Note]) VALUES (N'XLSZDDQV', N'Jakarta', N'X01', N'')
+INSERT [dbo].[MRT] ([Id_MRT], [MRT_Name], [Carriage], [Seat], [Date_Created], [Id_Status], [Note]) VALUES (N'XMRTNDCW00', N'MRT - 01', 1, 2, CAST(N'2016-02-09' AS Date), N'X01', N'')
+INSERT [dbo].[MRT] ([Id_MRT], [MRT_Name], [Carriage], [Seat], [Date_Created], [Id_Status], [Note]) VALUES (N'XMRTVBPX0W', N'frfr', 1, 1, CAST(N'2016-02-12' AS Date), N'X02', N'')
+INSERT [dbo].[Seat] ([Id_Seat], [Seat_Name], [Id_MRT], [Id_Carriage], [Date_Created], [Id_Status], [Note]) VALUES (N'XS332XOC', N'ijiji', N'XMRTVBPX0W', N'XC831OI1', CAST(N'2016-02-12' AS Date), N'X03', N'')
+INSERT [dbo].[Seat] ([Id_Seat], [Seat_Name], [Id_MRT], [Id_Carriage], [Date_Created], [Id_Status], [Note]) VALUES (N'XSURP8FZ', N'A1', N'XMRTNDCW00', N'XCE1XJ1Y', CAST(N'2016-02-10' AS Date), N'X01', N'')
+INSERT [dbo].[Seat] ([Id_Seat], [Seat_Name], [Id_MRT], [Id_Carriage], [Date_Created], [Id_Status], [Note]) VALUES (N'XSXWS5DS', N'A3', N'XMRTNDCW00', N'XCE1XJ1Y', CAST(N'2016-02-11' AS Date), N'X01', N'')
+INSERT [dbo].[Show] ([Id_Schedule], [Id_MRT], [MRT], [Departure_Station], [Destination_Station], [Departure_Time], [Arrival_Time], [Seat], [Date], [Note]) VALUES (N'XC7PNX91C8UL', N'XMRTNDCW00', N'MRT - 01', N'Bulan', N'Bawah Tanah', CAST(N'12:59:00' AS Time), CAST(N'12:59:00' AS Time), 2, CAST(N'2016-02-13' AS Date), N'qwq')
+INSERT [dbo].[Show] ([Id_Schedule], [Id_MRT], [MRT], [Departure_Station], [Destination_Station], [Departure_Time], [Arrival_Time], [Seat], [Date], [Note]) VALUES (N'XCDPHDGEQYOW', N'XMRTNDCW00', N'MRT - 01', N'Bulan', N'Bawah Tanah', CAST(N'12:59:00' AS Time), CAST(N'12:59:00' AS Time), 3, CAST(N'2016-02-13' AS Date), N'')
+INSERT [dbo].[Status] ([Id_Status], [Status_Name]) VALUES (N'X01', N'AVAILABLE')
+INSERT [dbo].[Status] ([Id_Status], [Status_Name]) VALUES (N'X02', N'REPAIR')
+INSERT [dbo].[Status] ([Id_Status], [Status_Name]) VALUES (N'X03', N'OFF')
+INSERT [dbo].[User] ([Id_User], [Username], [Password], [First_Name], [Last_Name], [Email], [Town], [Country], [Postcode], [Address], [Note]) VALUES (N'XU98P4ZH', N'robin', N'123', N'a', N'a', N'a', N'f', N'f', N'f', N'a', N'')
+INSERT [dbo].[Venue] ([Id_Station], [Station_Name], [Location], [Date_Created], [Id_Status], [Note]) VALUES (N'XAQ8ZHZ0', N'Bulan', N'Jakarta', CAST(N'2016-02-11' AS Date), N'X01', N'')
+INSERT [dbo].[Venue] ([Id_Station], [Station_Name], [Location], [Date_Created], [Id_Status], [Note]) VALUES (N'XAYVP7EU', N'Bawah Tanah', N'Jakarta', CAST(N'2016-02-10' AS Date), N'X01', N'')
+ALTER TABLE [dbo].[Booking]  WITH CHECK ADD  CONSTRAINT [FK_Booking_Passenger] FOREIGN KEY([Id_Passenger])
+REFERENCES [dbo].[Passenger] ([Id_Passenger])
+GO
+ALTER TABLE [dbo].[Booking] CHECK CONSTRAINT [FK_Booking_Passenger]
+GO
+ALTER TABLE [dbo].[Booking]  WITH CHECK ADD  CONSTRAINT [FK_Booking_Schedule] FOREIGN KEY([Id_Schedule])
+REFERENCES [dbo].[Show] ([Id_Schedule])
+GO
+ALTER TABLE [dbo].[Booking] CHECK CONSTRAINT [FK_Booking_Schedule]
+GO
+ALTER TABLE [dbo].[Booking]  WITH CHECK ADD  CONSTRAINT [FK_Booking_Ticket] FOREIGN KEY([Id_Ticket])
+REFERENCES [dbo].[Ticket] ([Id_Ticket])
+GO
+ALTER TABLE [dbo].[Booking] CHECK CONSTRAINT [FK_Booking_Ticket]
+GO
+ALTER TABLE [dbo].[Carriage]  WITH CHECK ADD  CONSTRAINT [FK_Carriage_MRT] FOREIGN KEY([Id_MRT])
+REFERENCES [dbo].[MRT] ([Id_MRT])
+ON UPDATE CASCADE
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Carriage] CHECK CONSTRAINT [FK_Carriage_MRT]
+GO
+ALTER TABLE [dbo].[Carriage]  WITH CHECK ADD  CONSTRAINT [FK_Carriage_Status] FOREIGN KEY([Id_Status])
+REFERENCES [dbo].[Status] ([Id_Status])
+GO
+ALTER TABLE [dbo].[Carriage] CHECK CONSTRAINT [FK_Carriage_Status]
+GO
+ALTER TABLE [dbo].[Location]  WITH CHECK ADD  CONSTRAINT [FK_Location_Status] FOREIGN KEY([Id_Status])
+REFERENCES [dbo].[Status] ([Id_Status])
+GO
+ALTER TABLE [dbo].[Location] CHECK CONSTRAINT [FK_Location_Status]
+GO
+ALTER TABLE [dbo].[MRT]  WITH CHECK ADD  CONSTRAINT [FK_MRT_Status] FOREIGN KEY([Id_Status])
+REFERENCES [dbo].[Status] ([Id_Status])
+GO
+ALTER TABLE [dbo].[MRT] CHECK CONSTRAINT [FK_MRT_Status]
+GO
+ALTER TABLE [dbo].[Payment]  WITH CHECK ADD  CONSTRAINT [FK_Payment_Booking] FOREIGN KEY([Booking_Reference])
+REFERENCES [dbo].[Booking] ([Booking_Reference])
+GO
+ALTER TABLE [dbo].[Payment] CHECK CONSTRAINT [FK_Payment_Booking]
+GO
+ALTER TABLE [dbo].[Seat]  WITH CHECK ADD  CONSTRAINT [FK_Seat_Carriage] FOREIGN KEY([Id_Carriage])
+REFERENCES [dbo].[Carriage] ([Id_Carriage])
+GO
+ALTER TABLE [dbo].[Seat] CHECK CONSTRAINT [FK_Seat_Carriage]
+GO
+ALTER TABLE [dbo].[Seat]  WITH CHECK ADD  CONSTRAINT [FK_Seat_MRT] FOREIGN KEY([Id_MRT])
+REFERENCES [dbo].[MRT] ([Id_MRT])
+ON UPDATE CASCADE
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Seat] CHECK CONSTRAINT [FK_Seat_MRT]
+GO
+ALTER TABLE [dbo].[Seat]  WITH CHECK ADD  CONSTRAINT [FK_Seat_Status] FOREIGN KEY([Id_Status])
+REFERENCES [dbo].[Status] ([Id_Status])
+GO
+ALTER TABLE [dbo].[Seat] CHECK CONSTRAINT [FK_Seat_Status]
+GO
+ALTER TABLE [dbo].[Ticket]  WITH CHECK ADD  CONSTRAINT [FK_Ticket_TicketType] FOREIGN KEY([Id_Ticket_Type])
+REFERENCES [dbo].[TicketType] ([Id_Ticket_Type])
+GO
+ALTER TABLE [dbo].[Ticket] CHECK CONSTRAINT [FK_Ticket_TicketType]
+GO
+ALTER TABLE [dbo].[Venue]  WITH CHECK ADD  CONSTRAINT [FK_Venue_Status] FOREIGN KEY([Id_Status])
+REFERENCES [dbo].[Status] ([Id_Status])
+GO
+ALTER TABLE [dbo].[Venue] CHECK CONSTRAINT [FK_Venue_Status]
+GO
+USE [master]
+GO
+ALTER DATABASE [TicketSystem] SET  READ_WRITE 
+GO
