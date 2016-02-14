@@ -1,0 +1,63 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MetroFramework.Controls;
+namespace System_Ticketing
+{
+    class v
+    {
+        public static Control.ControlCollection col;
+        public static Panel.ControlCollection pacinput;
+        public static void clearbox()
+        {
+            foreach (Control ctl in pacinput)
+            {
+                if (ctl.GetType() == typeof(MetroTextBox) || ctl.GetType() == typeof(RichTextBox) || ctl.GetType() == typeof(MetroComboBox)) { ctl.Text = ""; }
+                else if (ctl.GetType() == typeof(MetroDateTime) || ctl.GetType() == typeof(DateTimePicker))
+                {
+                    if (ctl.Name == "boxDate") { ctl.Text = DateTime.Now.ToShortDateString(); }
+                    else { ctl.Text = DateTime.Now.ToShortTimeString(); }
+                }
+                else if (ctl.GetType() == typeof(NumericUpDown)) ((NumericUpDown)ctl).Value = 0;
+            }
+            foreach (Control ctl in col)
+            {
+                if (ctl.GetType() == typeof(MetroTextBox)) { ctl.Text = ""; }
+            }
+            x.id = x.idcarriage = x.idmrt = x.mrtname = x.mrtname = x.locationname = x.carriagename = x.stationname = null;
+            x.mrtseat = 0;
+        }
+        public static bool validasi()
+        {
+            foreach (Control ctl in pacinput)
+            {
+                if (ctl.GetType() == typeof(MetroTextBox) || ctl.GetType() == typeof(RichTextBox) 
+                    || ctl.GetType() == typeof(MetroComboBox) || ctl.GetType() == typeof(MetroDateTime))
+                {
+
+                    if (String.IsNullOrWhiteSpace(ctl.Text)) { x.nValidasi(); return false; }
+
+                }
+            }
+            
+            return true;
+        }
+
+        public static void enablefalse()
+        {
+            foreach (Control ctl in pacinput)
+            {
+                if (ctl.GetType() == typeof(MetroTextBox) || ctl.GetType() == typeof(RichTextBox) || ctl.GetType() == typeof(ComboBox)
+                || ctl.GetType() == typeof(MetroDateTime) || ctl.GetType() == typeof(DateTimePicker) || ctl.GetType() == typeof(NumericUpDown)
+                || ctl.GetType() == typeof(Button) || ctl.GetType() == typeof(PictureBox))
+                {
+                    ctl.Enabled = false;
+                    if (ctl.Name == "boxUsername") ((MetroTextBox)ctl).ReadOnly = false;
+                }
+            }
+        }
+    }
+}
