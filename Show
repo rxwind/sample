@@ -1,0 +1,118 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace System_Ticketing
+{
+    public partial class fSCMRT : Form
+    {
+        public fSCMRT()
+        {
+            InitializeComponent();
+        }
+
+        private void fSMrt_Load(object sender, EventArgs e)
+        {
+            load();
+            lHeader.Text = x.component;
+        }
+        void load()
+        {
+            dgv.DataSource = null;
+            if (x.component == "MRT")
+            {
+                dgv.DataSource = x.dc.MRTs.Join(x.dc.Status, a => a.Id_Status, b => b.Id_Status, (a, b) =>
+               new { a.Id_MRT, a.MRT_Name, a.Carriage, a.Seat, a.Date_Created, a.Id_Status, b.Status_Name, a.Note }).ToList();
+            }
+            else if(x.component == "STATION")
+            {
+                dgv.DataSource = from a in x.dc.Venues
+                                 join b in x.dc.Status on a.Id_Status equals b.Id_Status
+                                 select new { a.Id_Station, a.Station_Name, a.Location, a.Date_Created, a.Id_Status, b.Status_Name, a.Note };
+            }
+            else if (x.component == "CARRIAGE")
+            {
+                dgv.DataSource = from a in x.dc.Carriages
+                                 join b in x.dc.Status on a.Id_Status equals b.Id_Status
+                                 join c in x.dc.MRTs on a.Id_MRT equals c.Id_MRT
+                                 where c.MRT_Name == x.mrtname
+                                 select new { a.Id_Carriage, a.Carriage_Name, a.Id_MRT, c.MRT_Name, a.Seat, a.Date_Created, a.Id_Status, b.Status_Name, a.Note };
+            }
+            else if (x.component == "LOCATION")
+            {
+                dgv.DataSource = from a in x.dc.Locations
+                                 join b in x.dc.Status on a.Id_Status equals b.Id_Status
+                                 select new { a.Id_Location, a.Location_Name, a.Id_Status, b.Status_Name, a.Note };
+            }
+                dgvdesign();
+        }
+        void dgvdesign()
+        {
+            if (x.component == "MRT")
+            {
+                dgv.Columns["Id_Status"].Visible = false;
+            }
+            else if(x.component == "STATION")
+            {
+                dgv.Columns["Id_Status"].Visible = false;
+            }
+            else if (x.component == "CARRIAGE")
+            {
+                dgv.Columns["Id_MRT"].Visible = false;
+                dgv.Columns["Id_Status"].Visible = false;
+            }
+            else if (x.component == "LOCATION")
+            {
+                dgv.Columns["Id_Status"].Visible = false;
+            }
+        }
+
+        private void bChoose_Click(object sender, EventArgs e)
+        {
+            choose();
+        }
+
+        private void dgv_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter) { choose(); }           
+        }
+        void choose()
+        {
+            if (dgv.RowCount > 0)
+            {
+                if (x.component == "MRT")
+                {
+                    x.idmrt = dgv.CurrentRow.Cells["Id_MRT"].Value.ToString();
+                    x.mrtname = dgv.CurrentRow.Cells["MRT_Name"].Value.ToString();
+                    x.mrtseat = (int)dgv.CurrentRow.Cells["Seat"].Value;
+                }
+                else if (x.component == "STATION")
+                {
+                    x.stationname = dgv.CurrentRow.Cells["Station_Name"].Value.ToString();                   
+                }
+                else if (x.component == "CARRIAGE")
+                {
+                    x.idcarriage = dgv.CurrentRow.Cells["Id_Carriage"].Value.ToString();
+                    x.carriagename = dgv.CurrentRow.Cells["Carriage_Name"].Value.ToString();
+                }
+                else if (x.component == "LOCATION")
+                {
+                    x.locationname = dgv.CurrentRow.Cells["Location_Name"].Value.ToString();
+                }
+                    this.DialogResult = DialogResult.OK;
+            }
+            else { x.nRowcountzero(); }
+        }
+
+        private void dgv_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            choose();
+        }
+    }
+}
