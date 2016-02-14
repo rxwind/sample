@@ -1,0 +1,84 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace System_Ticketing
+{
+    class x
+    {
+        // LINQ Connection        
+        public static linkqDataContext dc = new linkqDataContext();
+        //Table
+        public static User us = new User();
+        public static MRT tr = new MRT();
+        public static Status st = new Status();    
+        public static Carriage cr = new Carriage();
+        public static Seat se = new Seat();
+        public static Venue ve = new Venue();
+        public static Location lo = new Location();
+        public static Show sh = new Show();
+
+
+        //Form
+        public static fUtama utama = new fUtama();
+        public static fLogin login = new fLogin();
+        public static fHome home = new fHome();        
+        public static fUser user = new fUser();
+        public static fBooking booking = new fBooking();
+        public static fSchedule schedule = new fSchedule();
+        public static fTrain train = new fTrain();
+        public static fHelp help = new fHelp();
+        public static fNote note = new fNote();
+        public static fCarriage carriage = new fCarriage();
+        public static fSeat seat = new fSeat();
+        public static fStation station = new fStation();
+        public static fLocation location = new fLocation();
+        public static fSCMRT scmrt = new fSCMRT();
+
+        //Show
+        public static string component, mrtname, carriagename, locationname, stationname;
+        public static int mrtseat;
+
+        //Dgv
+        public static string id, idmrt, idcarriage;
+
+        //Mode
+        public static bool insertmode = false, updatemode = false;
+
+        public static ContextMenuStrip cm = new ContextMenuStrip();   
+
+        //Notice
+        public static void nRowcountzero() { MessageBox.Show("Tidak Ada Data"); }
+        public static void nChooserow() { MessageBox.Show("Pilih Baris yang akan di delete"); }
+        public static void nAlreadyuse() { MessageBox.Show("ID sudah digunakan"); }
+        public static void nUsernameAlreadyuse() { MessageBox.Show("Username sudah digunakan"); }
+        public static void nUpdate() { MessageBox.Show("Update"); }
+
+        //Validasi
+        public static void nValidasi() { MessageBox.Show("Isi data dengan lengkap "); }
+
+        //Note
+        public static string notetxt;       
+
+        //
+        public static void ph() { utama.pMenu.Width = 30; }
+
+        //~Color~
+        //RightClickMenu
+        public static Color cCmbackcolor = Color.White;
+        public static Color cCmforecolor = Color.Black;
+        //Tool
+        public static Color cInsertclick = Color.FromArgb(24, 130, 213);
+        public static Color cInsertbackcolor = Color.Black;
+        public static Color cUpdateclick = Color.FromArgb(24, 130, 213);
+        public static Color cUpdatebackcolor = Color.Black;
+        /*.FromArgb(20, 109, 178);*/
+        /*FromArgb(24, 130, 213);*/
+
+
+    }
+}
